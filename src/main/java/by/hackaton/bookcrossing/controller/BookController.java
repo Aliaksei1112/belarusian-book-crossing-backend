@@ -1,11 +1,11 @@
 package by.hackaton.bookcrossing.controller;
 
-import by.hackaton.bookcrossing.configuration.oauth.CustomOAuth2User;
 import by.hackaton.bookcrossing.dto.BookDto;
 import by.hackaton.bookcrossing.entity.Account;
 import by.hackaton.bookcrossing.entity.Book;
 import by.hackaton.bookcrossing.repository.AccountRepository;
 import by.hackaton.bookcrossing.repository.BookRepository;
+import by.hackaton.bookcrossing.util.AuthUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,15 +40,8 @@ public class BookController {
 
     @GetMapping("/my")
     public ResponseEntity<List<BookDto>> getMyBooks(Authentication auth) {
-        String email = ((CustomOAuth2User) auth.getPrincipal()).getEmail();
+        String email = AuthUtils.getEmailFromAuth(auth);
         List<BookDto> books = bookRepository.findByOwner_Username(email).stream().map(b -> modelMapper.map(b, BookDto.class)).collect(Collectors.toList());
-        return ok(books);
-    }
-
-    @GetMapping("/received")
-    public ResponseEntity<List<BookDto>> getReceivedBooks(Authentication auth) {
-        String email = ((CustomOAuth2User) auth.getPrincipal()).getEmail();
-        List<BookDto> books = bookRepository.findByReceiver_Username(email).stream().map(b -> modelMapper.map(b, BookDto.class)).collect(Collectors.toList());
         return ok(books);
     }
 
@@ -62,7 +55,7 @@ public class BookController {
     public ResponseEntity<Void> createBook(@RequestBody @Valid BookDto dto, Authentication auth) {
         Book book = modelMapper.map(dto, Book.class);
         if (auth != null) {
-            String email = ((CustomOAuth2User) auth.getPrincipal()).getEmail();
+            String email = AuthUtils.getEmailFromAuth(auth);
             Account account = accountRepository.findByUsername(email).orElseThrow();
             book.setOwner(account);
         }
@@ -78,25 +71,9 @@ public class BookController {
         return ok().build();
     }
 
-    @PutMapping("/send/{id}")
-    public ResponseEntity<Void> sendBook(@PathVariable("id") Long id, @RequestParam String username) {
-        Book book = bookRepository.findById(id).orElseThrow();
-        Account account = accountRepository.findByUsername(username).orElseThrow();
-        book.setSendStatus(true);
-        book.setReceiver(account);
-        bookRepository.save(book);
-        return ok().build();
-    }
-
-    @PutMapping("/receive/{id}")
-    public ResponseEntity<Void> receiveBook(@PathVariable("id") Long id) {
-        bookRepository.changeSendStatus(id);
-        return ok().build();
-    }
-
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
         bookRepository.deleteById(id);
         return ok().build();
-    }
+    }*/
 }

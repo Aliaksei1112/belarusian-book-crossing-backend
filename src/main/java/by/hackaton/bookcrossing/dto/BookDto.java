@@ -22,6 +22,7 @@ public class BookDto {
     private Double latitude;
     @NotNull
     private Double longitude;
-    private String owner;
+    private AccountShortDto owner;
     private boolean sendStatus;
+    private String language;
 }

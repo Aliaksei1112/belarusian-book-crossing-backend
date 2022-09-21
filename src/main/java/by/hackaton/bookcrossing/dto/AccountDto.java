@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UserDto extends UserShortDto {
+public class AccountDto extends AccountShortDto {
     private String email;
     private List<BookDto> books;
 }

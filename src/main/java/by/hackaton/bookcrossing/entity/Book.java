@@ -1,11 +1,13 @@
 package by.hackaton.bookcrossing.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,10 +30,13 @@ public class Book {
     @NotNull
     private Double longitude;
     @ManyToOne
+    @JoinColumn(name = "book_id")
     private Account owner;
-    @ManyToOne
-    private Account receiver;
-    private boolean sendStatus;
+    @ColumnDefault("true")
+    private boolean available;
+    private String language;
+    @OneToMany(mappedBy = "book")
+    private List<BookOrder> bookOrders;
 
     private LocalDateTime createdDate;
 

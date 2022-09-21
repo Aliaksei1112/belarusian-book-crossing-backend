@@ -19,7 +19,7 @@ public class Account {
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
     @OneToMany(mappedBy = "receiver")
-    private List<Book> receiving;
+    private List<BookOrder> bookOrders;
     private boolean enabled;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

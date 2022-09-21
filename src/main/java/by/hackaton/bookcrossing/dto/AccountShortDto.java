@@ -3,7 +3,7 @@ package by.hackaton.bookcrossing.dto;
 import lombok.Data;
 
 @Data
-public class UserShortDto {
-    private long id;
+public class AccountShortDto {
+    private Long id;
     private String username;
 }

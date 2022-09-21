@@ -1,7 +1,7 @@
 package by.hackaton.bookcrossing.controller;
 
-import by.hackaton.bookcrossing.dto.UserDto;
-import by.hackaton.bookcrossing.dto.UserShortDto;
+import by.hackaton.bookcrossing.dto.AccountDto;
+import by.hackaton.bookcrossing.dto.AccountShortDto;
 import by.hackaton.bookcrossing.entity.Account;
 import by.hackaton.bookcrossing.repository.AccountRepository;
 import org.modelmapper.ModelMapper;
@@ -24,22 +24,22 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDto> getUser(Authentication auth) {
+    public ResponseEntity<AccountDto> getUser(Authentication auth) {
         Account user = repository.findByUsername(auth.getName()).orElseThrow();
-        return ok(modelMapper.map(user, UserDto.class));
+        return ok(modelMapper.map(user, AccountDto.class));
     }
 
     @PutMapping
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto dto, Authentication auth) {
+    public ResponseEntity<AccountDto> updateUser(@RequestBody AccountDto dto, Authentication auth) {
         Account user = repository.findByUsername(auth.getName()).orElseThrow();
         modelMapper.map(user, dto);
         repository.save(user);
-        return ok(modelMapper.map(user, UserDto.class));
+        return ok(modelMapper.map(user, AccountDto.class));
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserShortDto> getUserByUsername(@PathVariable("username") String username) {
+    public ResponseEntity<AccountShortDto> getUserByUsername(@PathVariable("username") String username) {
         Account user = repository.findByUsername(username).orElseThrow();
-        return ok(modelMapper.map(user, UserShortDto.class));
+        return ok(modelMapper.map(user, AccountShortDto.class));
     }
 }
