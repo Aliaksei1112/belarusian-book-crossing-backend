@@ -2,8 +2,11 @@ package by.hackaton.bookcrossing.controller;
 
 import by.hackaton.bookcrossing.dto.AccountDto;
 import by.hackaton.bookcrossing.dto.AccountShortDto;
+import by.hackaton.bookcrossing.dto.LoginRequest;
 import by.hackaton.bookcrossing.entity.Account;
 import by.hackaton.bookcrossing.repository.AccountRepository;
+import by.hackaton.bookcrossing.service.AccountService;
+import by.hackaton.bookcrossing.util.AuthUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,31 +18,30 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private AccountRepository repository;
-    private ModelMapper modelMapper;
+    private AccountService accountService;
 
-    public ProfileController(AccountRepository repository, ModelMapper modelMapper) {
-        this.repository = repository;
-        this.modelMapper = modelMapper;
+    public ProfileController(AccountService service) {
+        this.accountService = service;
     }
 
     @GetMapping
     public ResponseEntity<AccountDto> getUser(Authentication auth) {
-        Account user = repository.findByUsername(auth.getName()).orElseThrow();
-        return ok(modelMapper.map(user, AccountDto.class));
+        return ok(accountService.getUser(auth.getName()));
     }
 
     @PutMapping
     public ResponseEntity<AccountDto> updateUser(@RequestBody AccountDto dto, Authentication auth) {
-        Account user = repository.findByUsername(auth.getName()).orElseThrow();
-        modelMapper.map(user, dto);
-        repository.save(user);
-        return ok(modelMapper.map(user, AccountDto.class));
+        return ok(accountService.updateUser(auth.getName(), dto));
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<AccountShortDto> getUserByUsername(@PathVariable("username") String username) {
-        Account user = repository.findByUsername(username).orElseThrow();
-        return ok(modelMapper.map(user, AccountShortDto.class));
+        return ok(accountService.getUserByUsername(username));
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody LoginRequest login, Authentication auth){
+        accountService.resetPassword(login.password, AuthUtils.getEmailFromAuth(auth));
+        return ok().build();
     }
 }

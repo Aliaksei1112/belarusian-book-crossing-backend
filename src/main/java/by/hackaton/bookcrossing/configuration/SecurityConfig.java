@@ -54,13 +54,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                //.cors()
-                //.and()
+                .cors()
+                .and()
                 .addFilterBefore(corsFilter, LogoutFilter.class)
                 .httpBasic()
                 .disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/auth/*").permitAll()
                 .antMatchers("/websocket").permitAll()
                 .antMatchers("/topic/*").permitAll()
                 .antMatchers("/chat.register").permitAll()
