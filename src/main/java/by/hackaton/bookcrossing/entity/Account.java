@@ -1,11 +1,10 @@
 package by.hackaton.bookcrossing.entity;
 
+import by.hackaton.bookcrossing.entity.enums.Role;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -22,11 +21,6 @@ public class Account {
     private List<BookOrder> bookOrders;
     private boolean enabled;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "account_roles",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

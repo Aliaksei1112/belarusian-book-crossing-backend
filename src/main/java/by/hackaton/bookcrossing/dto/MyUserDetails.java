@@ -1,7 +1,7 @@
 package by.hackaton.bookcrossing.dto;
 
 import by.hackaton.bookcrossing.entity.Account;
-import by.hackaton.bookcrossing.entity.Role;
+import by.hackaton.bookcrossing.entity.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,14 +21,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = account.getRoles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-
-        return authorities;
+        return List.of(new SimpleGrantedAuthority(account.getRole().name()));
     }
 
     @Override

@@ -24,7 +24,7 @@ public class FeedbackController {
 
     @PostMapping
     public ResponseEntity<Void> sendEmail(@RequestBody EmailRequest request, Authentication auth){
-        emailService.sendSimpleMessage(AuthUtils.getEmailFromAuth(auth), request.subject, request.body);
+        emailService.sendFeedbackMessage(AuthUtils.getEmailFromAuth(auth), request.subject, request.body);
         return ok().build();
     }
 }

@@ -1,6 +1,7 @@
 package by.hackaton.bookcrossing.configuration;
 
 import by.hackaton.bookcrossing.configuration.oauth.CustomOAuth2User;
+import by.hackaton.bookcrossing.dto.security.CustomAuthenticationProvider;
 import by.hackaton.bookcrossing.service.CustomOAuth2UserService;
 import by.hackaton.bookcrossing.service.UserDetailsServiceImpl;
 import by.hackaton.bookcrossing.service.UserService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +27,8 @@ public class SecurityConfig {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CustomAuthenticationProvider authProvider;
     private CORSFilter corsFilter;
     private UserDetailsServiceImpl userDetailsService;
 
@@ -52,6 +57,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(authProvider);
+        return authenticationManagerBuilder.build();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
@@ -72,7 +85,7 @@ public class SecurityConfig {
                 .antMatchers("/books/my").authenticated()
                 .antMatchers("/books/receive").authenticated()
                 .antMatchers("/profile").authenticated()
-                .antMatchers(HttpMethod.PUT,"/profile").authenticated()
+                .antMatchers(HttpMethod.PUT, "/profile").authenticated()
                 .antMatchers("/profile/*").permitAll()
                 .antMatchers(SWAGGER_ENDPOINTS).permitAll()
                 .anyRequest()

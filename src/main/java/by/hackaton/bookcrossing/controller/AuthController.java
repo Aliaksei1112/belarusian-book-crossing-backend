@@ -1,10 +1,9 @@
 package by.hackaton.bookcrossing.controller;
 
 import by.hackaton.bookcrossing.dto.LoginRequest;
+import by.hackaton.bookcrossing.dto.security.AuthResponse;
 import by.hackaton.bookcrossing.service.AuthService;
-import by.hackaton.bookcrossing.util.AuthUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -20,14 +19,18 @@ public class AuthController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<Void> signIn(@RequestBody LoginRequest login){
+    public ResponseEntity<Void> signIn(@RequestBody LoginRequest login) {
         authService.signIn(login);
         return ok().build();
     }
 
+    @GetMapping("/verify/mail")
+    public void verifyMail(@RequestParam("email") String email, @RequestParam("code") String code) {
+        authService.signUpConfirm(email, code);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest login){
-        authService.login(login);
-        return ok().build();
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest login) {
+        return ok(authService.login(login));
     }
 }
